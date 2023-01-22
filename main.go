@@ -1,8 +1,9 @@
 package main
 
 import (
-	"Golang-WEB/routes"
 	"net/http"
+
+	"github.com/henriquebarucco/Golang-WEB/routes"
 )
 
 func main() {

@@ -1,6 +1,6 @@
 package models
 
-import "Golang-WEB/db"
+import "github.com/henriquebarucco/Golang-WEB/db"
 
 type Produto struct {
 	Id         int
