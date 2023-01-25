@@ -6,14 +6,13 @@ type Produto struct {
 	Id         int
 	Nome       string
 	Descricao  string
-	Preco      float64
 	Quantidade int
 }
 
 func BuscaTodosOsProdutos() []Produto {
 	db := db.ConectaComBancoDeDados()
 
-	selectDeTodosOsProdutos, err := db.Query("select * from produtos order by id asc")
+	selectDeTodosOsProdutos, err := db.Query("select * from caixa_tbl order by id asc")
 	if err != nil {
 		panic(err.Error())
 	}
@@ -24,9 +23,8 @@ func BuscaTodosOsProdutos() []Produto {
 	for selectDeTodosOsProdutos.Next() {
 		var id, quantidade int
 		var nome, descricao string
-		var preco float64
 
-		err = selectDeTodosOsProdutos.Scan(&id, &nome, &descricao, &preco, &quantidade)
+		err = selectDeTodosOsProdutos.Scan(&id, &nome, &descricao, &quantidade)
 		if err != nil {
 			panic(err.Error())
 		}
@@ -34,7 +32,6 @@ func BuscaTodosOsProdutos() []Produto {
 		p.Id = id
 		p.Nome = nome
 		p.Descricao = descricao
-		p.Preco = preco
 		p.Quantidade = quantidade
 
 		produtos = append(produtos, p)
@@ -43,22 +40,22 @@ func BuscaTodosOsProdutos() []Produto {
 	return produtos
 }
 
-func CriaNovoProduto(nome string, descricao string, preco float64, quantidade int) {
+func CriaNovoProduto(nome string, descricao string, quantidade int) {
 	db := db.ConectaComBancoDeDados()
 
-	insereDadosNoBanco, err := db.Prepare("insert into produtos(nome, descricao, preco, quantidade) values(?, ?, ?, ?)")
+	insereDadosNoBanco, err := db.Prepare("insert into caixa_tbl(nome, descricao, quantidade) values(?, ?, ?)")
 	if err != nil {
 		panic(err.Error())
 	}
 
-	insereDadosNoBanco.Exec(nome, descricao, preco, quantidade)
+	insereDadosNoBanco.Exec(nome, descricao, quantidade)
 	defer db.Close()
 }
 
 func DeletaProduto(id string) {
 	db := db.ConectaComBancoDeDados()
 
-	deletarOProduto, err := db.Prepare("delete from produtos where id = ?")
+	deletarOProduto, err := db.Prepare("delete from caixa_tbl where id = ?")
 	if err != nil {
 		panic(err.Error())
 	}
@@ -70,7 +67,7 @@ func DeletaProduto(id string) {
 func EditaProduto(id string) Produto {
 	db := db.ConectaComBancoDeDados()
 
-	produtoDoBanco, err := db.Query("select * from produtos where id = ?", id)
+	produtoDoBanco, err := db.Query("select * from caixa_tbl where id = ?", id)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -80,9 +77,8 @@ func EditaProduto(id string) Produto {
 	for produtoDoBanco.Next() {
 		var id, quantidade int
 		var nome, descricao string
-		var preco float64
 
-		err = produtoDoBanco.Scan(&id, &nome, &descricao, &preco, &quantidade)
+		err = produtoDoBanco.Scan(&id, &nome, &descricao, &quantidade)
 		if err != nil {
 			panic(err.Error())
 		}
@@ -90,21 +86,20 @@ func EditaProduto(id string) Produto {
 		produtoParaAtualizar.Id = id
 		produtoParaAtualizar.Nome = nome
 		produtoParaAtualizar.Descricao = descricao
-		produtoParaAtualizar.Preco = preco
 		produtoParaAtualizar.Quantidade = quantidade
 	}
 	defer db.Close()
 	return produtoParaAtualizar
 }
 
-func AtualizaProduto(id int, nome, descricao string, preco float64, quantidade int) {
+func AtualizaProduto(id int, nome, descricao string, quantidade int) {
 	db := db.ConectaComBancoDeDados()
 
-	AtualizaProduto, err := db.Prepare("update produtos set nome=?, descricao=?, preco=?, quantidade=? where id=?")
+	AtualizaProduto, err := db.Prepare("update caixa_tbl set nome=?, descricao=?, quantidade=? where id=?")
 	if err != nil {
 		panic(err.Error())
 	}
 
-	AtualizaProduto.Exec(nome, descricao, preco, quantidade, id)
+	AtualizaProduto.Exec(nome, descricao, quantidade, id)
 	defer db.Close()
 }
